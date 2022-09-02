@@ -32,7 +32,7 @@ class ImageMatrixWrapper:
         self._image = image
         self._resolution = image.resolution
         # Holds the coordinates of all indexes which contain a red
-        # pixel value of over 200. We don't need to check all
+        # pixel value of over 199. We don't need to check all
         # pixels in the image to remove a pattern. We only need to
         # check the 'viable' candidates
         self._pattern_coordinate_candidates =\
@@ -53,10 +53,6 @@ class ImageMatrixWrapper:
     def discard_candidate(self, coordinates):
         self._pattern_coordinate_candidates.discard(coordinates)
 
-    def _identify_index_given_row_and_col(self, row: int, col: int) -> int:
-        offset = row * self.resolution.width
-        return offset + col
-
     def red_pixel_at(self, row: int, col: int) -> int:
         index = self._identify_index_given_row_and_col(row, col)
         return self._image.pixels_red[index]
@@ -69,6 +65,10 @@ class ImageMatrixWrapper:
         index = self._identify_index_given_row_and_col(row, col)
         red_pixel_value = self._image.pixels_red[index]
         return red_pixel_value >= ImageMatrixWrapper.RED_THRESHOLD
+
+    def _identify_index_given_row_and_col(self, row: int, col: int) -> int:
+        offset = row * self.resolution.width
+        return offset + col
 
     def _init_pattern_coordinate_candidates(self) -> Set[Tuple[int, int]]:
         '''

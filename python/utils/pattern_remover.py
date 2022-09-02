@@ -20,6 +20,17 @@ def __apply_pattern_removal_at_coordinates(matrix: ImageMatrixWrapper,
                                            pattern: BoolEyePattern,
                                            row_index: int,
                                            col_index: int):
+    '''
+    Reduces red pixel values in the image wrapped by matrix.
+    The reduced values match the shape of the pattern argument.
+    The pattern is overlayed such that its top left pixel matches
+    the (x, y) pixel location of (row_index, col_index) in the
+    image wrapped by matrix.
+
+    NOTE: mutates the matrix object. The pixel coordinates that
+    match the pattern are removed from the pattern candidates set
+    stored by the matrix argument.
+    '''
 
     for pattern_row_index, pattern_row in enumerate(pattern):
         for pattern_col_index, pattern_value in enumerate(pattern_row):
@@ -30,7 +41,8 @@ def __apply_pattern_removal_at_coordinates(matrix: ImageMatrixWrapper,
                                        col_index + pattern_col_index)
             # Once we've reduced the red value of a particular pixel,
             # we no longer need to check it in subsequent
-            # remove_pattern from_image calls
+            # remove_pattern from_image calls. Therefore, we discard it
+            # from the pattern candidates set
             # NOTE: this makes the assumptions that patterns don't overlap
             # if patterns overlap, this optimization will lead to incorrect
             # results
@@ -43,6 +55,16 @@ def __does_match_pattern_at_coordinates(
         pattern: BoolEyePattern,
         row_index: int,
         col_index: int) -> bool:
+    '''
+    Checks whether the provided pattern is found in the image
+    wrapped by the matrix argument.
+    The pattern is considered found if all locations in it
+    which are True are overlayed over red pixel values greater
+    than or equal to 200.
+    The pattern is overlayed such that its top left pixel matches
+    the (x, y) pixel location of (row_index, col_index) in the
+    image wrapped by matrix.
+    '''
 
     pattern_width = len(pattern[0])
     pattern_height = len(pattern)

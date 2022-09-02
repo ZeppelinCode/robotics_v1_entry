@@ -2,21 +2,27 @@
 
 from typing import (
     List,
-    Tuple,
     Union
 )
 
 from utils.image import (
-    ImageType,
     PackedImage,
     StrideImage,
 )
 
+from utils.pattern_remover import remove_all_patterns_from_image
+
 from utils.function_tracer import FunctionTracer
 
+
+# Tried distributing the computations using
+# multiprocessing.Pool.map(callable, images)
+# but the single-process performance was 3 times
+# faster than the parallel one
 def compute_solution(images: List[Union[PackedImage, StrideImage]]):
     ft = FunctionTracer("compute_solution", "seconds")
 
-    #TODO fill solution
+    for image in images:
+        remove_all_patterns_from_image(image)
+
     del ft
-            

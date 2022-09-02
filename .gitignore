@@ -1,4 +1,12 @@
+.vscode/
 python/input.bin
 python/output.bin
 python/small_input.bin
 python/small_output.bin
+python/__pycache__
+python/bin
+python/lib
+python/lib64
+python/pyvenv.cfg
+python/utils/__pycache__
+

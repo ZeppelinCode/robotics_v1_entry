@@ -35,7 +35,8 @@ class ImageMatrixWrapper:
         # pixel value of over 200. We don't need to check all
         # pixels in the image to remove a pattern. We only need to
         # check the 'viable' candidates
-        self._red_enough_pixel_indexes = self._init_red_enough_pixel_indexes()
+        self._pattern_coordinate_candidates =\
+            self._init_pattern_coordinate_candidates()
 
     @property
     def resolution(self):
@@ -46,8 +47,11 @@ class ImageMatrixWrapper:
         return self._image
 
     @property
-    def red_enough_pixel_positions(self):
-        return self._red_enough_pixel_indexes
+    def pattern_coordinate_candidates(self):
+        return self._pattern_coordinate_candidates
+
+    def discard_candidate(self, coordinates):
+        self._pattern_coordinate_candidates.discard(coordinates)
 
     def _identify_index_given_row_and_col(self, row: int, col: int) -> int:
         offset = row * self.resolution.width
@@ -66,7 +70,7 @@ class ImageMatrixWrapper:
         red_pixel_value = self._image.pixels_red[index]
         return red_pixel_value >= ImageMatrixWrapper.RED_THRESHOLD
 
-    def _init_red_enough_pixel_indexes(self) -> Set[Tuple[int, int]]:
+    def _init_pattern_coordinate_candidates(self) -> Set[Tuple[int, int]]:
         '''
         Builds a set of all index locations which are candidates (red >= 200)
         for a starting point of an eye pattern.

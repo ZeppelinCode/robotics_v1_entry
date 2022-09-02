@@ -3,7 +3,6 @@
 from utils.image import StrideImage
 from utils.image_matrix_wrapper import ImageMatrixWrapper
 from utils.eye_pattern import BoolEyePattern, BOOL_EYE_PATTERNS
-from typing import Set, Tuple
 
 
 def remove_all_patterns_from_image(image: StrideImage):
@@ -15,8 +14,7 @@ def remove_all_patterns_from_image(image: StrideImage):
 def __apply_pattern_removal_at_coordinates(matrix: ImageMatrixWrapper,
                                            pattern: BoolEyePattern,
                                            row_index: int,
-                                           col_index: int,
-                                           candidates: Set[Tuple[int, int]]):
+                                           col_index: int):
 
     for pattern_row_index, pattern_row in enumerate(pattern):
         for pattern_col_index, pattern_value in enumerate(pattern_row):
@@ -26,13 +24,13 @@ def __apply_pattern_removal_at_coordinates(matrix: ImageMatrixWrapper,
             matrix.reduce_red_value_at(row_index+pattern_row_index,
                                        col_index + pattern_col_index)
             # Once we've reduced the red value of a particular pixel,
-            # we no longer need to check it in subsequent remove_pattern
-            # from_image calls
+            # we no longer need to check it in subsequent
+            # remove_pattern from_image calls
             # NOTE: this makes the assumptions that patterns don't overlap
             # if patterns overlap, this optimization will lead to incorrect
             # results
-            candidates.discard((row_index+pattern_row_index,
-                                col_index + pattern_col_index))
+            matrix.discard_candidate((row_index+pattern_row_index,
+                                      col_index + pattern_col_index))
 
 
 def __does_match_pattern_at_coordinates(
@@ -72,9 +70,8 @@ def __remove_pattern_from_image(matrix: ImageMatrixWrapper,
         # with the "for x, y in matrix.red_enough_pixel_positions" loop
         # Therefore we restart the loop every single time we remove values
         # from it
-        for x, y in matrix.red_enough_pixel_positions:
+        for x, y in matrix.pattern_coordinate_candidates:
             if __does_match_pattern_at_coordinates(matrix, pattern, x, y):
+                __apply_pattern_removal_at_coordinates(matrix, pattern, x, y)
                 removed = True
-                __apply_pattern_removal_at_coordinates(
-                    matrix, pattern, x, y, matrix.red_enough_pixel_positions)
                 break

@@ -6,9 +6,14 @@ from utils.eye_pattern import BoolEyePattern, BOOL_EYE_PATTERNS
 
 
 def remove_all_patterns_from_image(image: StrideImage):
-    matrix_image = ImageMatrixWrapper(image)
-    for pattern in BOOL_EYE_PATTERNS:
-        __remove_pattern_from_image(matrix_image, pattern)
+    matrix = ImageMatrixWrapper(image)
+    while matrix.pattern_coordinate_candidates:
+        x, y = matrix.pattern_coordinate_candidates.pop()
+        for pattern in BOOL_EYE_PATTERNS:
+            if __does_match_pattern_at_coordinates(matrix, pattern, x, y):
+                __apply_pattern_removal_at_coordinates(
+                    matrix, pattern, x, y)
+                break
 
 
 def __apply_pattern_removal_at_coordinates(matrix: ImageMatrixWrapper,
@@ -57,21 +62,3 @@ def __does_match_pattern_at_coordinates(
                 return False
 
     return True
-
-
-def __remove_pattern_from_image(matrix: ImageMatrixWrapper,
-                                pattern: BoolEyePattern):
-
-    removed = True
-    while removed:
-        removed = False
-        # Need to nest two loops because apply_pattern_removal_at_coordinates
-        # can modify matrix.red_enough_pixel_positions which would cause issues
-        # with the "for x, y in matrix.red_enough_pixel_positions" loop
-        # Therefore we restart the loop every single time we remove values
-        # from it
-        for x, y in matrix.pattern_coordinate_candidates:
-            if __does_match_pattern_at_coordinates(matrix, pattern, x, y):
-                __apply_pattern_removal_at_coordinates(matrix, pattern, x, y)
-                removed = True
-                break

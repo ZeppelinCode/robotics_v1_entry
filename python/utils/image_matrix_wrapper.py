@@ -73,7 +73,9 @@ class ImageMatrixWrapper:
     def _init_pattern_coordinate_candidates(self) -> Set[Tuple[int, int]]:
         '''
         Builds a set of all index locations which are candidates (red >= 200)
-        for a starting point of an eye pattern.
+        for a starting point (top left pixel) of an eye pattern.
+
+        Attempts to exploit the fact that eye patterns can be sparse.
         '''
         def to_matrix_coordinates(index) -> Tuple[int, int]:
             x = index // self.resolution.width
